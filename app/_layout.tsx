@@ -1,5 +1,3 @@
-// import "../tamagui-web.css";
-
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toasts } from "@backpackapp-io/react-native-toast";
@@ -8,12 +6,13 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 import { useColorScheme } from "react-native";
 import { TamaguiProvider } from "tamagui";
 
 import { tamaguiConfig } from "../tamagui.config";
 import { Easing } from "react-native-reanimated";
+import { themes } from "@/utils/theme";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -32,7 +31,12 @@ export default function RootLayout() {
               overrideDarkMode={true}
               preventScreenReaderFromHiding={true}
             />
-            <Slot />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                statusBarBackgroundColor: themes.light.accent4,
+              }}
+            />
           </GestureHandlerRootView>
         </SafeAreaProvider>
       </ThemeProvider>
