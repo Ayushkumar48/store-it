@@ -1,48 +1,30 @@
 import { Text, XStack, Button, YStack, H5, Spinner } from "tamagui";
 import { LogIn, UserPlus, RefreshCcw } from "@tamagui/lucide-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useState, useCallback } from "react";
-import api, { SESSION_NAME } from "@/utils/interceptor";
-import { isAxiosError } from "axios";
-import { getItemAsync } from "expo-secure-store";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { validateSession } from "@/utils/api-functions";
+import { toast } from "@backpackapp-io/react-native-toast";
 
 export default function Index() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<null | string>(null);
 
-  const checkUser = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const sessionId = await getItemAsync(SESSION_NAME);
-      if (sessionId) {
-        const { data } = await api.post("/validate", sessionId);
-        if (data?.success) {
-          router.replace("/dashboard");
-        } else {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    } catch (err) {
-      setError("Failed to connect to server. Please try again.");
-      if (isAxiosError(err)) {
-        console.error(err?.response?.data);
-      } else {
-        console.error(err);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ["validate-session"],
+    queryFn: validateSession,
+    retry: false,
+  });
 
   useEffect(() => {
-    checkUser();
-  }, [checkUser]);
+    if (data?.success) {
+      router.replace("/dashboard");
+    } else if (data && !data.success) {
+      toast.error(data.message || "Session expired. Please login.");
+      router.replace("/login");
+    }
+  }, [data, router]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <YStack
         style={{ alignItems: "center", justifyContent: "center", flex: 1 }}
@@ -54,21 +36,15 @@ export default function Index() {
 
   if (error) {
     return (
-      <YStack
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          flex: 1,
-          gap: 20,
-          paddingHorizontal: 20,
-        }}
-      >
+      <YStack items="center" justify="center" flex={1} gap={20} px={20}>
         <Text fontSize={18} color="$red10" text="center">
-          {error}
+          {error instanceof Error
+            ? error.message
+            : "Failed to connect to server. Please try again."}
         </Text>
         <Button
           icon={RefreshCcw}
-          onPress={checkUser}
+          onPress={() => refetch()}
           theme="accent"
           variant="outlined"
           color="$accent4"

@@ -4,10 +4,11 @@ import { YStack, Image } from "tamagui";
 
 export default function Signup() {
   return (
-    <YStack style={{ padding: "$2", alignSelf: "center" }} gap="$2">
+    <YStack self="center" p="$2" gap="$2">
       <Image
         source={require("@/assets/images/login-img.png")}
-        style={{ width: vw, height: vh * 0.3 }}
+        width={vw}
+        height={vh * 0.3}
       />
       <SignupForm />
     </YStack>

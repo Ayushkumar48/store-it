@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Animated, StyleSheet } from "react-native";
+import { Animated } from "react-native";
 import { Input, Label, YStack, Text } from "tamagui";
 
 type LoginInputProps = {
@@ -57,7 +57,7 @@ export function LoginInput({
     <Animated.View
       style={{ transform: [{ translateX: shakeAnim }], width: "100%" }}
     >
-      <YStack style={styles.input}>
+      <YStack width="100%">
         <Label>{label}</Label>
         <Input
           placeholder={placeholder}
@@ -76,9 +76,3 @@ export function LoginInput({
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    width: "100%",
-  },
-});

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useCallback } from "react";
-import { Animated, StyleSheet } from "react-native";
+import { Animated } from "react-native";
 import { Input, Label, YStack, Text } from "tamagui";
 
 interface SignupInputProps {
@@ -55,7 +55,7 @@ export function SignupInput({
   }, [error, shake]);
 
   return (
-    <YStack style={styles.input}>
+    <YStack width="100%">
       <Label htmlFor={id}>{label}</Label>
       <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
         <Input
@@ -75,9 +75,3 @@ export function SignupInput({
     </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    width: "100%",
-  },
-});
