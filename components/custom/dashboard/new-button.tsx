@@ -3,8 +3,12 @@ import { PlusSquare, Image, Video } from "@tamagui/lucide-icons";
 import { launchImageLibraryAsync } from "expo-image-picker";
 import { Alert } from "react-native";
 import api from "@/utils/interceptor";
+import { useQueryClient } from "@tanstack/react-query";
+import { MediaType } from "@/types";
 
 export default function NewButton() {
+  const queryClient = useQueryClient();
+
   async function pickMedia(type: "image" | "video") {
     let result = await launchImageLibraryAsync({
       mediaTypes: type === "image" ? ["images"] : ["videos"],
@@ -45,9 +49,12 @@ export default function NewButton() {
                     "Content-Type": "multipart/form-data",
                   },
                 });
-                // console.log("Upload success:", res.data);
-              } catch (error) {
-                console.error("Upload failed:", error);
+                queryClient.setQueryData<MediaType[]>(
+                  ["medias"],
+                  (old = []) => [...res.data.urls, ...old],
+                );
+              } catch (error: any) {
+                console.error("Upload failed:", error.response.data);
               }
             },
           },

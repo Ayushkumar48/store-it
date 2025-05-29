@@ -2,7 +2,7 @@ import { MediaType } from "@/types";
 import { Image, Text, View, XStack, YStack } from "tamagui";
 
 export default function MonthImages({ medias }: { medias: MediaType[] }) {
-  console.log(medias[0]);
+  // console.log(medias[0]);
   return (
     <YStack gap="$4">
       <Text fontSize="$5">March, 2025 ({medias.length})</Text>
