@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "store-it",
+    "name": "Store It",
     "slug": "store-it",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.ayushkumar48.storeit"
     },
     "web": {
       "bundler": "metro",
@@ -36,13 +37,24 @@
       ],
       "expo-font",
       "expo-build-properties",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "BASE_NGROK_URL": "https://light-gull-notable.ngrok-free.app"
+      "BASE_NGROK_URL": "https://light-gull-notable.ngrok-free.app",
+      "router": {},
+      "eas": {
+        "projectId": "fa155776-f0ab-4591-950c-63ede835908c"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fa155776-f0ab-4591-950c-63ede835908c"
     }
   }
 }

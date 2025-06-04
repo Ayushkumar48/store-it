@@ -1,15 +1,45 @@
+import * as Notifications from "expo-notifications";
 import { Button, Popover, Separator, YStack } from "tamagui";
 import { PlusSquare, Image, Video } from "@tamagui/lucide-icons";
 import { launchImageLibraryAsync } from "expo-image-picker";
 import { Alert } from "react-native";
-import api from "@/utils/interceptor";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MediaType } from "@/types";
+import { uploadMedia } from "@/utils/api-functions";
 
 export default function NewButton() {
   const queryClient = useQueryClient();
 
+  const uploadMediaMutation = useMutation({
+    mutationFn: uploadMedia,
+    onSuccess: (data) => {
+      queryClient.setQueryData<MediaType[]>(["medias"], (old = []) => [
+        ...data.media,
+        ...old,
+      ]);
+    },
+    onError: (error: any) => {
+      console.error("Upload failed:", error.response?.data || error);
+      Alert.alert(
+        "Upload Failed",
+        error.response?.data?.error || "Something went wrong during upload",
+      );
+    },
+  });
+
   async function pickMedia(type: "image" | "video") {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Hello! 👋",
+        body: "This is a local notification.",
+        sound: true,
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 5,
+      },
+    });
+    return;
     let result = await launchImageLibraryAsync({
       mediaTypes: type === "image" ? ["images"] : ["videos"],
       quality: 1,
@@ -43,19 +73,8 @@ export default function NewButton() {
                 } as any);
               });
 
-              try {
-                const res = await api.post("/media", formData, {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                });
-                queryClient.setQueryData<MediaType[]>(
-                  ["medias"],
-                  (old = []) => [...res.data.urls, ...old],
-                );
-              } catch (error: any) {
-                console.error("Upload failed:", error.response.data);
-              }
+              // Use the mutation to upload files
+              uploadMediaMutation.mutate(formData);
             },
           },
         ],

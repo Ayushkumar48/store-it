@@ -55,8 +55,17 @@ export default function Dashboard() {
     <>
       <ScrollView>
         <YStack width="100%" gap="$4" mt={8} mb={25} px={6} items="center">
-          {medias && <MonthImages medias={medias} />}
-          <Text>No more content to show.</Text>
+          {medias && medias.length > 0 ? (
+            <MonthImages medias={medias} />
+          ) : (
+            <YStack items="center" py={40}>
+              <Text color="$accent4">No images or videos found.</Text>
+              <Text color="$accent5" fontSize="$2" mt={4}>
+                Upload media using the + button below
+              </Text>
+            </YStack>
+          )}
+          {medias && medias.length > 0 && <Text>No more content to show.</Text>}
         </YStack>
       </ScrollView>
       <NewButton />

@@ -33,3 +33,15 @@ export async function fetchImages(): Promise<MediaType[]> {
   const response = await api.get("/media/list");
   return response.data.media;
 }
+
+export async function uploadMedia(formData: FormData): Promise<{
+  media: MediaType[];
+  message: string;
+}> {
+  const response = await api.post("/media", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+}

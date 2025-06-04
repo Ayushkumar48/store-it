@@ -6,7 +6,9 @@ export const SESSION_NAME = "accessToken";
 
 const api = axios.create({
   baseURL: Constants.expoConfig?.extra?.BASE_NGROK_URL,
-  timeout: 4000,
+  timeout: 0,
+  maxBodyLength: Infinity,
+  maxContentLength: Infinity,
   headers: { "Content-Type": "application/json" },
 });
 
