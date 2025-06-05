@@ -14,6 +14,16 @@ import { tamaguiConfig } from "../tamagui.config";
 import { Easing } from "react-native-reanimated";
 import { themes } from "@/utils/theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 export default function RootLayout() {
   const queryClient = new QueryClient();

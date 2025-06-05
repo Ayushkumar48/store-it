@@ -6,7 +6,7 @@ import { ScrollView, Spinner, Text, YStack, Button } from "tamagui";
 import { useQuery } from "@tanstack/react-query";
 import { fetchImages } from "@/utils/api-functions";
 
-export default function Dashboard() {
+function Dashboard() {
   const {
     data: medias,
     isLoading,
@@ -19,6 +19,7 @@ export default function Dashboard() {
     retry: false,
   });
 
+  console.log(medias?.[0]);
   if (isLoading) {
     return (
       <YStack
@@ -72,3 +73,5 @@ export default function Dashboard() {
     </>
   );
 }
+
+export default Dashboard;

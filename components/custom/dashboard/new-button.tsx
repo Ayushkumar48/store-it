@@ -6,9 +6,19 @@ import { Alert } from "react-native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MediaType } from "@/types";
 import { uploadMedia } from "@/utils/api-functions";
+import { useEffect } from "react";
 
 export default function NewButton() {
   const queryClient = useQueryClient();
+  useEffect(() => {
+    async function requestPermissions() {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== "granted") {
+        await Notifications.requestPermissionsAsync();
+      }
+    }
+    requestPermissions();
+  }, []);
 
   const uploadMediaMutation = useMutation({
     mutationFn: uploadMedia,
@@ -17,6 +27,7 @@ export default function NewButton() {
         ...data.media,
         ...old,
       ]);
+      console.log(data);
     },
     onError: (error: any) => {
       console.error("Upload failed:", error.response?.data || error);
@@ -28,18 +39,6 @@ export default function NewButton() {
   });
 
   async function pickMedia(type: "image" | "video") {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Hello! 👋",
-        body: "This is a local notification.",
-        sound: true,
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 5,
-      },
-    });
-    return;
     let result = await launchImageLibraryAsync({
       mediaTypes: type === "image" ? ["images"] : ["videos"],
       quality: 1,
@@ -59,6 +58,14 @@ export default function NewButton() {
           {
             text: "Upload",
             onPress: async () => {
+              await Notifications.scheduleNotificationAsync({
+                content: {
+                  title: "Uploading! 📤",
+                  body: "Uploading the content to cloud.",
+                  sound: true,
+                },
+                trigger: null,
+              });
               const formData = new FormData();
 
               result.assets.forEach((asset, index) => {
@@ -73,7 +80,14 @@ export default function NewButton() {
                 } as any);
               });
 
-              // Use the mutation to upload files
+              await Notifications.scheduleNotificationAsync({
+                content: {
+                  title: "Uploaded ✅",
+                  body: "Successfully uploaded to cloud!",
+                  sound: true,
+                },
+                trigger: null,
+              });
               uploadMediaMutation.mutate(formData);
             },
           },

@@ -3,7 +3,9 @@ export type MediaType = {
   mediaType: "video" | "image";
   userId: string;
   createdAt: string;
-  presignedUrl: string;
-  expiresAt: string;
-  cloudUrl: string;
+  // presignedUrl: string;
+  cloudfrontUrl: string;
+  // expiresAt: string;
+  // cloudUrl: string;
+  error?: string;
 };

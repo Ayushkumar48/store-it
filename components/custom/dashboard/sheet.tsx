@@ -101,12 +101,12 @@ export function MediaShow({
         >
           {media.mediaType === "video" ? (
             <VideoPlayer
-              videoUrl={media.presignedUrl}
+              videoUrl={media.cloudfrontUrl}
               isVisible={currentPage === index}
             />
           ) : (
             <Image
-              source={{ uri: media.presignedUrl }}
+              source={{ uri: media.cloudfrontUrl }}
               width="100%"
               height="100%"
               objectFit="contain"

@@ -27,10 +27,10 @@ export default function MonthImages({ medias }: { medias: MediaType[] }) {
                 }}
               >
                 {isVideo ? (
-                  <VideoThumbnail videoUrl={item.presignedUrl} />
+                  <VideoThumbnail videoUrl={item.cloudfrontUrl} />
                 ) : (
                   <Image
-                    source={{ uri: item.presignedUrl }}
+                    source={{ uri: item.cloudfrontUrl }}
                     width="100%"
                     height="100%"
                     borderRadius="$2"
