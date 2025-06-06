@@ -5,8 +5,12 @@ import { RefreshCcw } from "@tamagui/lucide-icons";
 import { ScrollView, Spinner, Text, YStack, Button } from "tamagui";
 import { useQuery } from "@tanstack/react-query";
 import { fetchImages } from "@/utils/api-functions";
+import { RefreshControl } from "react-native";
+import { useState } from "react";
 
-function Dashboard() {
+export default function Dashboard() {
+  const [refreshing, setRefreshing] = useState(false);
+
   const {
     data: medias,
     isLoading,
@@ -19,7 +23,12 @@ function Dashboard() {
     retry: false,
   });
 
-  console.log(medias?.[0]);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+
   if (isLoading) {
     return (
       <YStack
@@ -54,7 +63,11 @@ function Dashboard() {
 
   return (
     <>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <YStack width="100%" gap="$4" mt={8} mb={25} px={6} items="center">
           {medias && medias.length > 0 ? (
             <MonthImages medias={medias} />
@@ -66,12 +79,9 @@ function Dashboard() {
               </Text>
             </YStack>
           )}
-          {medias && medias.length > 0 && <Text>No more content to show.</Text>}
         </YStack>
       </ScrollView>
       <NewButton />
     </>
   );
 }
-
-export default Dashboard;

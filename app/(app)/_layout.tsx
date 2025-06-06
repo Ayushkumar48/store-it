@@ -39,6 +39,12 @@ export default function Layout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="account/edit/index"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

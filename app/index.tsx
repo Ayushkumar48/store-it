@@ -14,7 +14,6 @@ export default function Index() {
     queryFn: validateSession,
     retry: false,
   });
-
   useEffect(() => {
     if (data?.success) {
       router.replace("/dashboard");

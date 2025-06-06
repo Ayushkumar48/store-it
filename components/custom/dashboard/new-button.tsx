@@ -10,6 +10,8 @@ import { useEffect } from "react";
 
 export default function NewButton() {
   const queryClient = useQueryClient();
+  const UPLOAD_NOTIFICATION_ID = "upload-notification";
+  
   useEffect(() => {
     async function requestPermissions() {
       const { status } = await Notifications.getPermissionsAsync();
@@ -22,13 +24,6 @@ export default function NewButton() {
 
   const uploadMediaMutation = useMutation({
     mutationFn: uploadMedia,
-    onSuccess: (data) => {
-      queryClient.setQueryData<MediaType[]>(["medias"], (old = []) => [
-        ...data.media,
-        ...old,
-      ]);
-      console.log(data);
-    },
     onError: (error: any) => {
       console.error("Upload failed:", error.response?.data || error);
       Alert.alert(
@@ -37,6 +32,27 @@ export default function NewButton() {
       );
     },
   });
+
+  const uploadSingleMedia = async (asset: any) => {
+    const formData = new FormData();
+    formData.append("media", {
+      uri: asset.uri,
+      name:
+        asset.fileName ||
+        `file.${asset.type === "video" ? "mp4" : "jpg"}`,
+      type:
+        asset.mimeType ||
+        (asset.type === "video" ? "video/mp4" : "image/jpeg"),
+    } as any);
+
+    const result = await uploadMedia(formData);
+    // Update the query cache with the newly uploaded media
+    queryClient.setQueryData<MediaType[]>(["medias"], (old = []) => [
+      ...result.media,
+      ...old,
+    ]);
+    return result;
+  };
 
   async function pickMedia(type: "image" | "video") {
     let result = await launchImageLibraryAsync({
@@ -58,37 +74,73 @@ export default function NewButton() {
           {
             text: "Upload",
             onPress: async () => {
+              Alert.alert(
+                "Upload Started",
+                "Files will be uploaded sequentially"
+              );
+
+              let uploadedCount = 0;
+              let failedCount = 0;
+              const totalFiles = result.assets.length;
+              
+              // Create initial notification
+              await Notifications.dismissAllNotificationsAsync();
               await Notifications.scheduleNotificationAsync({
                 content: {
-                  title: "Uploading! 📤",
-                  body: "Uploading the content to cloud.",
-                  sound: true,
+                  title: "Video Upload",
+                  body: `Preparing to upload ${totalFiles} video${totalFiles > 1 ? 's' : ''}...`,
+                  sound: false,
                 },
+                identifier: UPLOAD_NOTIFICATION_ID,
                 trigger: null,
               });
-              const formData = new FormData();
-
-              result.assets.forEach((asset, index) => {
-                formData.append("media", {
-                  uri: asset.uri,
-                  name:
-                    asset.fileName ||
-                    `file-${index}.${asset.type === "video" ? "mp4" : "jpg"}`,
-                  type:
-                    asset.mimeType ||
-                    (asset.type === "video" ? "video/mp4" : "image/jpeg"),
-                } as any);
-              });
-
+              
+              // Process files one by one
+              for (const asset of result.assets) {
+                try {
+                  await Notifications.scheduleNotificationAsync({
+                    content: {
+                      title: "Video Upload",
+                      body: `Uploading ${uploadedCount + 1} of ${totalFiles}`,
+                      sound: false,
+                    },
+                    identifier: UPLOAD_NOTIFICATION_ID,
+                    trigger: null,
+                  });
+                  
+                  await uploadSingleMedia(asset);
+                  uploadedCount++;
+                } catch (error) {
+                  console.error("Individual upload failed:", error);
+                  failedCount++;
+                }
+                
+                // Only update notification if not the last file (to avoid flashing before final notification)
+                if (uploadedCount + failedCount < totalFiles) {
+                  await Notifications.scheduleNotificationAsync({
+                    content: {
+                      title: "Video Upload",
+                      body: `Progress: ${uploadedCount} of ${totalFiles} complete`,
+                      sound: false,
+                    },
+                    identifier: UPLOAD_NOTIFICATION_ID,
+                    trigger: null,
+                  });
+                }
+              }
+              
+              // Final notification on completion
               await Notifications.scheduleNotificationAsync({
                 content: {
-                  title: "Uploaded ✅",
-                  body: "Successfully uploaded to cloud!",
+                  title: failedCount > 0 ? "Upload Completed with Issues" : "Upload Completed ✅",
+                  body: failedCount > 0 
+                    ? `${uploadedCount} of ${totalFiles} videos uploaded, ${failedCount} failed`
+                    : `All ${totalFiles} video${totalFiles > 1 ? 's' : ''} uploaded successfully!`,
                   sound: true,
                 },
+                identifier: UPLOAD_NOTIFICATION_ID,
                 trigger: null,
               });
-              uploadMediaMutation.mutate(formData);
             },
           },
         ],
