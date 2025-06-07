@@ -4,6 +4,7 @@ import { PlusSquare, Image, Video } from "@tamagui/lucide-icons";
 import { launchImageLibraryAsync } from "expo-image-picker";
 import { Alert } from "react-native";
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
+import { SaveFormat, ImageManipulator } from "expo-image-manipulator";
 import { uploadMedia } from "@/utils/api-functions";
 import { useEffect } from "react";
 import { MediaType } from "@/types";
@@ -23,12 +24,27 @@ export default function NewButton() {
   }, []);
 
   const uploadSingleMedia = async (asset: any) => {
+    let optimizedUri = asset.uri;
+
+    if (asset.type === "image") {
+      try {
+        const context = ImageManipulator.manipulate(asset.uri);
+        const manipulatedImage = await context.renderAsync();
+        const result = await manipulatedImage.saveAsync({
+          format: SaveFormat.WEBP,
+        });
+        optimizedUri = result.uri;
+      } catch (error) {
+        console.error("Image optimization failed:", error);
+      }
+    }
+
     const formData = new FormData();
     formData.append("media", {
-      uri: asset.uri,
-      name: asset.fileName || `file.${asset.type === "video" ? "mp4" : "jpg"}`,
+      uri: optimizedUri,
+      name: asset.fileName || `file.${asset.type === "video" ? "mp4" : "webp"}`,
       type:
-        asset.mimeType || (asset.type === "video" ? "video/mp4" : "image/jpeg"),
+        asset.mimeType || (asset.type === "video" ? "video/mp4" : "image/webp"),
     } as any);
 
     try {
