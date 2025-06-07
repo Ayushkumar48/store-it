@@ -29,9 +29,18 @@ export async function signupUser(formData: {
   return data;
 }
 
-export async function fetchImages(): Promise<MediaType[]> {
-  const response = await api.get("/media/list");
-  return response.data.media;
+export async function fetchImages({
+  pageParam = 1,
+  limit = 30,
+}: { pageParam?: number; limit?: number } = {}): Promise<{
+  media: MediaType[];
+  hasMore: boolean;
+}> {
+  const response = await api.get("/media/list", {
+    params: { page: pageParam, limit },
+  });
+  // Assume backend returns { media: [...], hasMore: true/false }
+  return response.data;
 }
 
 export async function uploadMedia(formData: FormData): Promise<{

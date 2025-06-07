@@ -2,24 +2,39 @@ import MonthImages from "@/components/custom/dashboard/month-images";
 import NewButton from "@/components/custom/dashboard/new-button";
 import { RefreshCcw } from "@tamagui/lucide-icons";
 import { Spinner, Text, YStack, Button } from "tamagui";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchImages } from "@/utils/api-functions";
 import { useState } from "react";
+
+const PAGE_SIZE = 30;
 
 export default function Dashboard() {
   const [refreshing, setRefreshing] = useState(false);
 
   const {
-    data: medias,
+    data,
     isLoading,
     isError,
     error,
+    fetchNextPage,
+    hasNextPage,
     refetch,
-  } = useQuery({
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["medias"],
-    queryFn: fetchImages,
+    queryFn: ({ pageParam = 1 }) =>
+      fetchImages({ pageParam, limit: PAGE_SIZE }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasMore ? allPages?.length + 1 : undefined,
     retry: false,
   });
+
+  const medias = data
+    ? data.pages.flatMap((page) =>
+        Array.isArray(page.media) ? page.media : [],
+      )
+    : [];
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -59,11 +74,14 @@ export default function Dashboard() {
 
   return (
     <>
-      {medias && medias.length > 0 ? (
+      {medias && medias?.length > 0 ? (
         <MonthImages
           medias={medias}
           refreshing={refreshing}
           onRefresh={onRefresh}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
         />
       ) : (
         <YStack items="center" py={40}>

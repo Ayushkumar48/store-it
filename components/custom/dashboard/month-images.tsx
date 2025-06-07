@@ -1,7 +1,7 @@
 import { MediaType } from "@/types";
 import { Image, Text, View, XStack } from "tamagui";
 import { VideoThumbnail } from "./video-thumbnail";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import { CustomSheet } from "./sheet";
 
@@ -9,18 +9,28 @@ type Props = {
   medias: MediaType[];
   refreshing: boolean;
   onRefresh: () => void;
+  fetchNextPage: () => void;
+  hasNextPage: boolean | undefined;
+  isFetchingNextPage: boolean | undefined;
 };
 
-export default function MonthImages({ medias, refreshing, onRefresh }: Props) {
+export default function MonthImages({
+  medias,
+  refreshing,
+  onRefresh,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+}: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <FlatList
-        data={medias}
+        data={medias ?? []}
         numColumns={4}
-        keyExtractor={(_, index) => index.toString()}
+        keyExtractor={(item) => item.id.toString()}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -47,6 +57,19 @@ export default function MonthImages({ medias, refreshing, onRefresh }: Props) {
             setSelectedIndex={setSelectedIndex}
           />
         )}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        // onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <Text text="center" py={12}>
+              Loading more...
+            </Text>
+          ) : null
+        }
       />
 
       {selectedIndex !== null && (
@@ -62,7 +85,7 @@ export default function MonthImages({ medias, refreshing, onRefresh }: Props) {
   );
 }
 
-function MediaItem({
+const MediaItem = memo(function MediaItem({
   media,
   index,
   setOpen,
@@ -77,7 +100,7 @@ function MediaItem({
 
   return (
     <View
-      key={index}
+      key={media.id}
       aspectRatio={1}
       flexBasis="23%"
       position="relative"
@@ -116,4 +139,4 @@ function MediaItem({
       )}
     </View>
   );
-}
+});
