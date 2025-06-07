@@ -1,11 +1,9 @@
 import MonthImages from "@/components/custom/dashboard/month-images";
 import NewButton from "@/components/custom/dashboard/new-button";
-import { MediaType } from "@/types";
 import { RefreshCcw } from "@tamagui/lucide-icons";
-import { ScrollView, Spinner, Text, YStack, Button } from "tamagui";
+import { Spinner, Text, YStack, Button } from "tamagui";
 import { useQuery } from "@tanstack/react-query";
 import { fetchImages } from "@/utils/api-functions";
-import { RefreshControl } from "react-native";
 import { useState } from "react";
 
 export default function Dashboard() {
@@ -17,7 +15,7 @@ export default function Dashboard() {
     isError,
     error,
     refetch,
-  } = useQuery<MediaType[]>({
+  } = useQuery({
     queryKey: ["medias"],
     queryFn: fetchImages,
     retry: false,
@@ -63,24 +61,20 @@ export default function Dashboard() {
 
   return (
     <>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        <YStack width="100%" gap="$4" mt={8} mb={25} px={6} items="center">
-          {medias && medias.length > 0 ? (
-            <MonthImages medias={medias} />
-          ) : (
-            <YStack items="center" py={40}>
-              <Text color="$accent4">No images or videos found.</Text>
-              <Text color="$accent5" fontSize="$2" mt={4}>
-                Upload media using the + button below
-              </Text>
-            </YStack>
-          )}
+      {medias && medias.length > 0 ? (
+        <MonthImages
+          medias={medias}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      ) : (
+        <YStack items="center" py={40}>
+          <Text color="$accent4">No images or videos found.</Text>
+          <Text color="$accent5" fontSize="$2" mt={4}>
+            Upload media using the + button below
+          </Text>
         </YStack>
-      </ScrollView>
+      )}
       <NewButton />
     </>
   );

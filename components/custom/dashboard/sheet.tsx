@@ -5,7 +5,7 @@ import PagerView from "react-native-pager-view";
 import { Image, View } from "tamagui";
 import { VideoPlayer } from "./video-player";
 
-export const SheetDemo = ({
+export function CustomSheet({
   open,
   setOpen,
   medias,
@@ -17,7 +17,7 @@ export const SheetDemo = ({
   medias: MediaType[];
   setSelectedIndex: Dispatch<SetStateAction<number | null>>;
   selectedIndex: number;
-}) => {
+}) {
   return (
     <Sheet
       forceRemoveScrollEnabled={open}
@@ -60,7 +60,7 @@ export const SheetDemo = ({
       </Sheet.Frame>
     </Sheet>
   );
-};
+}
 
 export function MediaShow({
   medias,
