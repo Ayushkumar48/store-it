@@ -29,9 +29,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <YStack
-        style={{ alignItems: "center", justifyContent: "center", flex: 1 }}
-      >
+      <YStack items="center" justify="center" flex={1}>
         <Spinner size="large" color="$accent4" />
       </YStack>
     );
