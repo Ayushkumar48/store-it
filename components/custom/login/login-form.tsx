@@ -18,8 +18,8 @@ import { LoginInput } from "./login-input";
 import { SESSION_NAME } from "@/utils/interceptor";
 import { setItemAsync } from "expo-secure-store";
 import { isAxiosError } from "axios";
-import { useMutation } from "@tanstack/react-query";
-import { loginUser } from "@/utils/api-functions";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { loginUser, validateSession } from "@/utils/api-functions";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -28,7 +28,11 @@ const loginSchema = z.object({
 
 export function LoginForm() {
   const router = useRouter();
-
+  const { refetch } = useQuery({
+    queryKey: ["validate-session"],
+    queryFn: validateSession,
+    retry: false,
+  });
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState<{
     username?: string;
@@ -48,9 +52,8 @@ export function LoginForm() {
   const { mutate: login, isPending } = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data) => {
-      if (data.sessionId) {
-        await setItemAsync(SESSION_NAME, data.sessionId);
-      }
+      await setItemAsync(SESSION_NAME, data.sessionId);
+      await refetch();
       toast.success(data.message);
       router.replace("/dashboard");
     },

@@ -18,8 +18,8 @@ import { SignupInput } from "./signup-input";
 import { SESSION_NAME } from "@/utils/interceptor";
 import { setItemAsync } from "expo-secure-store";
 import { isAxiosError } from "axios";
-import { useMutation } from "@tanstack/react-query";
-import { signupUser } from "@/utils/api-functions";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { signupUser, validateSession } from "@/utils/api-functions";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -31,6 +31,11 @@ type SignupData = z.infer<typeof signupSchema>;
 
 export function SignupForm() {
   const router = useRouter();
+  const { refetch } = useQuery({
+    queryKey: ["validate-session"],
+    queryFn: validateSession,
+    retry: false,
+  });
   const [formData, setFormData] = useState<SignupData>({
     name: "",
     username: "",
@@ -45,6 +50,7 @@ export function SignupForm() {
     mutationFn: signupUser,
     onSuccess: async (data) => {
       await setItemAsync(SESSION_NAME, data.sessionId);
+      await refetch();
       toast.success(data.message);
       router.replace("/dashboard");
     },

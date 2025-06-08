@@ -1,8 +1,21 @@
 import { LoginForm } from "@/components/custom/login/login-form";
+import { User } from "@/types";
 import { vh, vw } from "@/utils/theme";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { YStack, Image } from "tamagui";
 
-export default function Signup() {
+export default function Login() {
+  const queryClient = useQueryClient();
+  const userSession = queryClient.getQueryData<{
+    message: string;
+    success: boolean;
+    user: User;
+  }>(["validate-session"]);
+  const router = useRouter();
+  if (userSession?.user) {
+    router.replace("/dashboard");
+  }
   return (
     <YStack self="center" p="$2" gap="$2">
       <Image
