@@ -1,5 +1,5 @@
 import { MediaType } from "@/types";
-import { Image, Text, View, XStack } from "tamagui";
+import { Image, Spinner, Text, View, XStack, YStack } from "tamagui";
 import { VideoThumbnail } from "./video-thumbnail";
 import { memo, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
@@ -62,12 +62,12 @@ export default function MonthImages({
             fetchNextPage();
           }
         }}
-        // onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.8}
         ListFooterComponent={
           isFetchingNextPage ? (
-            <Text text="center" py={12}>
-              Loading more...
-            </Text>
+            <YStack items="center" py={12}>
+              <Spinner color="$accent4" />
+            </YStack>
           ) : null
         }
       />
