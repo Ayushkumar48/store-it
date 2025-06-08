@@ -77,7 +77,7 @@ export function MediaShow({
     <PagerView
       style={{
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: "black",
         height: "100%",
         width: "100%",
       }}
@@ -91,13 +91,11 @@ export function MediaShow({
       {medias.map((media, index) => (
         <View
           key={index}
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            width: "100%",
-          }}
+          flex={1}
+          justify="center"
+          items="center"
+          height="100%"
+          width="100%"
         >
           {media.mediaType === "video" ? (
             <VideoPlayer
