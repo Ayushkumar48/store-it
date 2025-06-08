@@ -5,16 +5,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import { User } from "@/types";
 
 export default function Layout() {
-  const queryClient = useQueryClient();
-  const userSession = queryClient.getQueryData<{
-    message: string;
-    success: boolean;
-    user: User;
-  }>(["validate-session"]);
-  const router = useRouter();
-  if (!userSession?.user) {
-    router.replace("/login");
-  }
+  // const queryClient = useQueryClient();
+  // const userSession = queryClient.getQueryData<{
+  //   message: string;
+  //   success: boolean;
+  //   user: User;
+  // }>(["validate-session"]);
+  // const router = useRouter();
+  // if (!userSession?.user) {
+  //   router.replace("/login");
+  // }
   return (
     <Tabs
       screenOptions={{

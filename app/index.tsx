@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { validateSession } from "@/utils/api-functions";
 import { toast } from "@backpackapp-io/react-native-toast";
+import { isAxiosError } from "axios";
 
 export default function Index() {
   const router = useRouter();
@@ -15,13 +16,18 @@ export default function Index() {
     retry: false,
   });
   useEffect(() => {
-    if (data?.success) {
-      router.replace("/dashboard");
-    } else if (data && !data.success) {
-      toast.error(data.message || "Session expired. Please login.");
+    if (error) {
+      if (isAxiosError(error) && error?.response?.status !== 500) {
+        toast.error(
+          error.response?.data.message || "Session expired. Please login.",
+        );
+      }
       router.replace("/login");
     }
-  }, [data, router]);
+    if (data?.success) {
+      router.replace("/dashboard");
+    }
+  }, [data, router, error]);
 
   if (isLoading) {
     return (
