@@ -5,7 +5,7 @@ import Constants from "expo-constants";
 export const SESSION_NAME = "accessToken";
 
 const api = axios.create({
-  baseURL: Constants.expoConfig?.extra?.BASE_NGROK_URL,
+  baseURL: "http://20.193.144.141:3000",
   timeout: 0,
   maxBodyLength: Infinity,
   maxContentLength: Infinity,
