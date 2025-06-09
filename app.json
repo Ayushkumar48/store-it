@@ -45,7 +45,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "BASE_NGROK_URL": "https://light-gull-notable.ngrok-free.app",
+      "BASE_NGROK_URL": "http://20.193.144.141:3000",
       "router": {},
       "eas": {
         "projectId": "fa155776-f0ab-4591-950c-63ede835908c"
