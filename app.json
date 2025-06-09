@@ -13,6 +13,7 @@
       "bundleIdentifier": "com.ayushkumar48.storeit"
     },
     "android": {
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
@@ -45,7 +46,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "BASE_NGROK_URL": "http://20.193.144.141:3000",
+      "BASE_NGROK_URL": "http://129.154.246.89:3000",
       "router": {},
       "eas": {
         "projectId": "fa155776-f0ab-4591-950c-63ede835908c"
