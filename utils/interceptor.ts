@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 export const SESSION_NAME = "accessToken";
 
 const api = axios.create({
-  baseURL: "http://20.193.144.141:3000",
+  baseURL: "http://129.154.246.89:3000",
   timeout: 0,
   maxBodyLength: Infinity,
   maxContentLength: Infinity,
